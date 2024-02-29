@@ -1,0 +1,99 @@
+{
+	"$schema": "https://raw.githubusercontent.com/Bedrock-OSS/regolith-schemas/main/config/v1.1.json",
+	"author": "Hatchibombotar",
+	"name": "Bundlepacks",
+	"packs": {
+		"behaviorPack": "./packs/BP",
+		"resourcePack": "./packs/RP"
+	},
+	"regolith": {
+		"dataPath": "./packs/data",
+		"filterDefinitions": {
+			"gametests": {
+				"url": "github.com/Bedrock-OSS/regolith-filters",
+				"version": "1.5.3"
+			},
+			"metadata": {
+				"url": "github.com/Hatchibombotar/useful-regolith-filters",
+				"version": "latest"
+			},
+			"package": {
+				"url": "github.com/Hatchibombotar/useful-regolith-filters",
+				"version": "1.1.0"
+			},
+			"import": {
+				"url": "github.com/Hatchibombotar/useful-regolith-filters",
+				"version": "latest"
+			}
+		},
+		"profiles": {
+			"build": {
+				"export": {
+					"readOnly": false,
+					"target": "local"
+				},
+				"filters": [
+					{
+						"profile": "default"
+					},
+					{
+						"filter": "package",
+						"settings": {
+							"file_name": "build/bundlepacks",
+							"package": {
+								"mcaddon": {}
+							}
+						}
+					}
+				]
+			},
+			"default": {
+				"export": {
+					"readOnly": false,
+					"target": "development"
+				},
+				"filters": [
+					{
+						"filter": "gametests",
+						"settings": {
+							"buildOptions": {
+								"bundle": true,
+								"entryPoints": [
+									"BP/scripts/main.ts"
+								],
+								"format": "esm",
+								"minify": false,
+								"target": "es2020"
+							},
+							"moduleUUID": "2b2ab797-6ad5-4b56-8de3-6dfe98b3216f",
+							"modules": [
+								"@minecraft/server@1.9.0-beta"
+							]
+						}
+					},
+					{
+						"filter": "import",
+						"settings": {
+							"imports": [
+								{
+									"from": "assets/pack_icon.png",
+									"to": "BP/pack_icon.png"
+								},
+								{
+									"from": "assets/pack_icon.png",
+									"to": "RP/pack_icon.png"
+								}
+							]
+						}
+					},
+					{
+						"filter": "metadata",
+						"settings": {
+							"url": "https://github.com/Hatchibombotar/bundlepacks-addon"
+						}
+					}
+				]
+			}
+		}
+	}
+}

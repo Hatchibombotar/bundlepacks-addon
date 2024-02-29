@@ -1,0 +1,9 @@
+{
+	"resource_pack_name": "bundlepacks",
+	"texture_name": "atlas.items",
+	"texture_data": {
+		"bundlepack": {
+			"textures": "textures/items/bundlepack_item"
+		}
+	}
+}

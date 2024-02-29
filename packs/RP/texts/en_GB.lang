@@ -1,0 +1,4 @@
+item.hatchi:bundlepack=Bundlepack
+custom.hatchi.bundlepack.inventory_name=Bundlepack Inventory
+custom.hatchi.bundlepack.inventory_id_prefix=Bundlepack
+custom.hatchi.bundlepack.item_not_supported=This item cannot be stored in a bundlepack.

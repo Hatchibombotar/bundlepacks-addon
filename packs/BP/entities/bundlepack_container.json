@@ -1,0 +1,54 @@
+{
+    "format_version": "1.20.41",
+    "minecraft:entity": {
+        "description": {
+            "identifier": "hatchi:bundlepack_container",
+            "is_spawnable": true,
+            "is_summonable": true
+        },
+        "component_groups": { },
+        "components": {
+            "minecraft:inventory": {
+                "additional_slots_per_strength": 0,
+                "can_be_siphoned_from": false,
+                "container_type": "minecart_chest",
+                "inventory_size": 27,
+                "private": false,
+                "restrict_to_owner": false
+            },
+            "minecraft:collision_box": {
+                "height": 1,
+                "width": 1
+            },
+            "minecraft:health": {
+                "value": 2,
+                "max": 2,
+                "min": 1
+            },
+            "minecraft:damage_sensor": {
+                "triggers": [
+                    {
+                        "on_damage": {
+                            "filters": {
+                                "any_of": [
+                                    {
+                                        "test": "is_family",
+                                        "subject": "other",
+                                        "value": "player"
+                                    },
+                                    {
+                                        "test": "has_damage",
+                                        "subject": "self",
+                                        "value": "fire"
+                                    }
+                                ]
+                            }
+                        },
+                        "deals_damage": false
+                    }
+                ]
+            }
+        },
+        "events": { }
+    }
+}

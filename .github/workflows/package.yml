@@ -1,0 +1,23 @@
+name: Build and upload MC Addon
+
+on:
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Build regolith project
+              uses: Bedrock-OSS/regolith-action@v1.0.3
+              with:
+                profile: build
+            - name: Release
+              uses: softprops/action-gh-release@v1
+              with:
+                files: |
+                  build/bundlepacks.mcaddon
+                  readme.md
+                  licence.md

@@ -1,0 +1,22 @@
+{
+	"format_version" : "1.8.0",
+	"animations" : {
+		"animation.bundlepack.move" : {
+			"loop" : true,
+			"bones" : {
+				"bundlepack" : {
+					"position" : [ 0.0, "query.get_root_locator_offset('armor_offset.default_neck', 1) - 1", 0.0 ],
+					"rotation" : [ "math.lerp(0.0, 30.0, query.cape_flap_amount)", 0.0, 0.0 ]
+				}
+			}
+		},
+		"animation.bundlepack.display" : {
+			"loop" : true,
+			"bones" : {
+				"bundlepack" : {
+					"scale": "!c.is_first_person"
+				}
+			}
+		}
+	}
+}
