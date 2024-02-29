@@ -14,6 +14,7 @@ The crafting recipe to create the bundlepack item.
 
 
 ![alt text](assets/bundlepacks.gif)
+
 Walking around has a nice animation.
 
 ## How to use:
