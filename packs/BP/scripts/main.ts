@@ -238,7 +238,6 @@ function tick() {
 }
 
 function init() {
-    world.sendMessage("hi")
     const bundlepacks = world.getDimension("overworld").getEntities(
         {
             type: "hatchi:bundlepack_container",
