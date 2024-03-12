@@ -24,6 +24,10 @@
 			"import": {
 				"url": "github.com/Hatchibombotar/useful-regolith-filters",
 				"version": "latest"
+			},
+			"npm-install": {
+				"runWith": "shell",
+				"command": "npm install --force"
 			}
 		},
 		"profiles": {
@@ -33,6 +37,9 @@
 					"target": "local"
 				},
 				"filters": [
+					{
+						"filter": "npm-install"
+					},
 					{
 						"profile": "default"
 					},
