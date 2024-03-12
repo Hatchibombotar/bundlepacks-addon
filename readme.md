@@ -1,5 +1,5 @@
 # Bundlepacks
-Last working version: 1.20.62
+Last release tested for version 1.20.70
 
 This addon adds backpacks to the game! They allow you to move large amounts of items from place to place or just to use them for more inventory space cheaply.
 

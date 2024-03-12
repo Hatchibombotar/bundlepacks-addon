@@ -1,5 +1,6 @@
-import { Container, EnchantmentType, Entity, EquipmentSlot, ItemStack, Player, Vector, system, world } from "@minecraft/server"
+import { Container, EnchantmentType, Entity, EquipmentSlot, ItemStack, Player, system, world } from "@minecraft/server"
 import { disallowed_items } from "./config"
+import { Vector3Utils as Vector, VECTOR3_UP } from '@minecraft/math'
 
 interface ComponentRepresentation { typeId: accepted_item_components }
 
@@ -72,7 +73,7 @@ function tick() {
         if (containers[bundlepack_id] == undefined) {
             bundlepack_entity = player.dimension.spawnEntity(
                 "hatchi:bundlepack_container",
-                Vector.add(player.location, Vector.multiply(Vector.up, 3))
+                Vector.add(player.location, Vector.scale(VECTOR3_UP, 3))
             )
             bundlepack_entity.nameTag = "custom.hatchi.bundlepack.inventory_name"
 

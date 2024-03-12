@@ -1,5 +1,5 @@
 {
-	"format_version": "1.20.50",
+	"format_version": "1.20.70",
 	"minecraft:item": {
 		"description": {
 			"identifier": "hatchi:bundlepack",
@@ -9,7 +9,9 @@
 		},
 		"components": {
 			"minecraft:icon": {
-				"texture": "bundlepack"
+				"textures": {
+    				"default": "bundlepack"
+				}
 			},
 			"minecraft:max_stack_size": {
 				"value": 1
