@@ -23,13 +23,6 @@
 				"tags": [
 					"hatchi:back_item"
 				]
-			},
-			"minecraft:durability": {
-				"damage_chance": {
-					"min": 0,
-					"max": 0
-				},
-				"max_durability": 100
 			}
 		}
 	}
