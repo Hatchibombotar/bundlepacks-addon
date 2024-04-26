@@ -3,7 +3,7 @@
     "minecraft:entity": {
         "description": {
             "identifier": "hatchi:bundlepack_container",
-            "is_spawnable": true,
+            "is_spawnable": false,
             "is_summonable": true
         },
         "component_groups": { },

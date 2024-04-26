@@ -1,4 +1,4 @@
-import { Container, EnchantmentType, Entity, EquipmentSlot, ItemStack, Player, system, world } from "@minecraft/server"
+import { Container, EnchantmentType, Entity, EntityVariantComponent, EquipmentSlot, ItemStack, Player, system, world } from "@minecraft/server"
 import { disallowed_items } from "./config"
 import { Vector3Utils as Vector, VECTOR3_UP } from '@minecraft/math'
 
@@ -138,12 +138,7 @@ function tick() {
                         typeId: "minecraft:enchantable",
                         enchantments: itemstack.getComponent("enchantable")?.getEnchantments().map(
                             (enchanment) => {
-                                let type: string
-                                if (typeof enchanment.type === "string") {
-                                    type = enchanment.type
-                                } else {
-                                    type = (enchanment.type as EnchantmentType).id
-                                }
+                                const type = (enchanment.type as EnchantmentType).id
                                 return {
                                     type: type,
                                     level: enchanment.level
@@ -295,7 +290,7 @@ function fillBundleInventory(backpack_data: ItemRepresentation[], inventory: Con
                     enchantments.addEnchantment(
                         {
                             level: enchanment.level,
-                            type: enchanment.type
+                            type: new EnchantmentType(enchanment.type)
                         }
                     )
                 }
