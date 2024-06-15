@@ -1,4 +1,4 @@
-import { Container, EnchantmentType, Entity, EntityVariantComponent, EquipmentSlot, ItemStack, Player, system, world } from "@minecraft/server"
+import { Container, EnchantmentType, Entity, EntityComponentTypes, EntityEquippableComponent, EntityInventoryComponent, EntityTameMountComponent, EntityVariantComponent, EquipmentSlot, ItemDurabilityComponent, ItemEnchantableComponent, ItemStack, Player, system, world } from "@minecraft/server"
 import { disallowed_items } from "./config"
 import { Vector3Utils as Vector, VECTOR3_UP } from '@minecraft/math'
 
@@ -42,13 +42,13 @@ function tick() {
         container.in_use = false
     }
     for (const player of world.getAllPlayers()) {
-        let inventory = player.getComponent("inventory")?.container
+        let inventory = (player.getComponent(EntityComponentTypes.Inventory) as EntityInventoryComponent)?.container
         if (inventory == undefined) {
             console.error("inventory container undefined on player")
             continue
         }
 
-        const held_item = inventory.getItem(player.selectedSlot)
+        const held_item = inventory.getItem(player.selectedSlotIndex)
         if (held_item?.typeId != "hatchi:bundlepack") {
             continue
         }
@@ -60,7 +60,7 @@ function tick() {
 
             world.setDynamicProperty("hatchi:last_bundlepack_id", bundlepack_id)
             held_item.setDynamicProperty("hatchi:bundlepack_id", bundlepack_id)
-            inventory.setItem(player.selectedSlot, held_item)
+            inventory.setItem(player.selectedSlotIndex, held_item)
         }
 
 
@@ -75,6 +75,7 @@ function tick() {
                 "hatchi:bundlepack_container",
                 Vector.add(player.location, Vector.scale(VECTOR3_UP, 3))
             )
+
             bundlepack_entity.nameTag = "custom.hatchi.bundlepack.inventory_name"
 
             containers[bundlepack_id] = {
@@ -87,7 +88,7 @@ function tick() {
             if (typeof backpack_data_str === "string") {
                 const backpack_data = JSON.parse(backpack_data_str) as ItemRepresentation[]
 
-                const bundle_inventory = bundlepack_entity.getComponent("inventory")?.container
+                const bundle_inventory = (bundlepack_entity.getComponent(EntityComponentTypes.Inventory) as EntityInventoryComponent)?.container
                 if (bundle_inventory == undefined) {
                     console.error("inventory container undefined on bundlepack")
                     return
@@ -111,7 +112,7 @@ function tick() {
 
         bundlepack_entity.teleport(player.getHeadLocation())
 
-        const bundle_inventory = bundlepack_entity.getComponent("inventory")?.container
+        const bundle_inventory = (bundlepack_entity.getComponent(EntityComponentTypes.Inventory) as EntityInventoryComponent)?.container
         if (bundle_inventory == undefined) {
             console.error("inventory container undefined on bundlepack")
             continue
@@ -136,7 +137,7 @@ function tick() {
                 if (typeId == "minecraft:enchantable") {
                     const component: EnchantableComponentRepresentation = {
                         typeId: "minecraft:enchantable",
-                        enchantments: itemstack.getComponent("enchantable")?.getEnchantments().map(
+                        enchantments: (itemstack.getComponent("enchantable") as ItemEnchantableComponent)?.getEnchantments().map(
                             (enchanment) => {
                                 const type = (enchanment.type as EnchantmentType).id
                                 return {
@@ -151,7 +152,7 @@ function tick() {
                 } else if (typeId == "minecraft:durability") {
                     const component: DurabilityComponentRepresentation = {
                         typeId: "minecraft:durability",
-                        damage: itemstack.getComponent("durability")?.damage
+                        damage: (itemstack.getComponent("durability") as ItemDurabilityComponent)?.damage
                     }
 
                     item.components.push(component)
@@ -179,7 +180,7 @@ function tick() {
         const inventory_data = JSON.stringify(data)
 
         held_item.setDynamicProperty("hatchi:bundlepack_data", inventory_data)
-        inventory.setItem(player.selectedSlot, held_item)
+        inventory.setItem(player.selectedSlotIndex, held_item)
     }
 
     for (const container of Object.values(containers)) {
@@ -196,7 +197,7 @@ function tick() {
 
             if (container.last_used_by_player == null) continue
 
-            const bundle_inventory = entity.getComponent("inventory")?.container
+            const bundle_inventory = (entity.getComponent("inventory") as EntityInventoryComponent)?.container
             if (bundle_inventory == undefined) {
                 console.error("inventory container undefined on bundlepack")
                 continue
@@ -219,7 +220,7 @@ function tick() {
                     )
                     player.playSound("note.bassattack")
 
-                    let inventory = player.getComponent("inventory")?.container
+                    let inventory = (player.getComponent("inventory") as EntityInventoryComponent)?.container
                     if (inventory == undefined) {
                         throw Error("inventory container undefined on player")
                     }
@@ -246,7 +247,7 @@ function init() {
 
 // Used to update a player's inventory after an item has been transfered to them.
 function updateInventory(player: Player) {
-    let inventory = player.getComponent("inventory")?.container
+    let inventory = (player.getComponent("inventory") as EntityInventoryComponent)?.container
     if (inventory == undefined) {
         throw Error("inventory container undefined on player")
     }
@@ -276,7 +277,7 @@ function fillBundleInventory(backpack_data: ItemRepresentation[], inventory: Con
             if (typeId == "minecraft:durability") {
                 const representation = component as DurabilityComponentRepresentation
 
-                let durability = itemstack.getComponent("minecraft:durability")
+                let durability = itemstack.getComponent("minecraft:durability") as ItemDurabilityComponent
                 if (durability == undefined) continue
                 if (representation.damage == undefined) continue
 
@@ -284,7 +285,7 @@ function fillBundleInventory(backpack_data: ItemRepresentation[], inventory: Con
             } else if (typeId == "minecraft:enchantable") {
                 const representation = component as EnchantableComponentRepresentation
 
-                let enchantments = itemstack.getComponent("minecraft:enchantable")
+                let enchantments = itemstack.getComponent("minecraft:enchantable") as ItemEnchantableComponent
                 if (enchantments == undefined) continue
                 for (const enchanment of representation.enchantments) {
                     enchantments.addEnchantment(
@@ -310,11 +311,11 @@ world.beforeEvents.itemUse.subscribe((event) => {
     if (event.itemStack.typeId == "hatchi:bundlepack") {
         system.run(
             () => {
-                const item = event.source.getComponent("equippable")?.getEquipment(
+                const item = (event.source.getComponent("equippable") as EntityEquippableComponent)?.getEquipment(
                     EquipmentSlot.Chest
                 )?.typeId
                 if (item == undefined) {
-                    event.source.getComponent("equippable")?.setEquipment(
+                    (event.source.getComponent("equippable") as EntityEquippableComponent)?.setEquipment(
                         EquipmentSlot.Chest,
                         new ItemStack("minecraft:air")
                     )
