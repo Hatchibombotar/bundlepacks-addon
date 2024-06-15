@@ -31,6 +31,3 @@ Walking around has a nice animation.
 
 ## Limitations
 There are some items that are unable to be stored inside bundlepacks due to technical limitations. A sound plays if the item doesn't work and a message will appear in chat.
-
-## Installation
-- Requires the Beta APIs Toggle to be enabled.
