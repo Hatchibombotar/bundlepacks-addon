@@ -4,20 +4,20 @@
         "name": "Bundlepacks",
         "description": "By Hatchibombotar",
         "uuid": "c02cce59-be62-48b4-bc1f-4ff6686e3ff2",
-        "version": [ 1, 2, 0 ],
-        "min_engine_version": [ 1, 21, 0 ]
+        "version": [ 1, 3, 0 ],
+        "min_engine_version": [ 1, 21, 20 ]
     },
     "modules": [
         {
             "type": "data",
             "uuid": "cfe825d0-8bde-4f00-8b53-25cd329785a2",
-            "version": [ 1, 2, 0 ]
+            "version": [ 1, 3, 0 ]
         }
     ],
     "dependencies": [
         {
             "uuid": "5ffb5b34-cd48-4d26-8371-2d13552d6eaa",
-            "version": [ 1, 2, 0 ]
+            "version": [ 1, 3, 0 ]
         }
     ]
 }
