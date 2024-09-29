@@ -3,7 +3,7 @@
 	"texture_name": "atlas.items",
 	"texture_data": {
 		"bundlepack": {
-			"textures": "textures/bundlepacks/item"
+			"textures": "textures/bundlepacks/items/bundlepack"
 		},
 		"none": {
 			"textures": "textures/bundlepacks/air"

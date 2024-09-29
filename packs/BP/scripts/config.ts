@@ -1,8 +1,4 @@
 export const disallowed_items = [
-    "minecraft:cobblestone_wall",
-    "minecraft:purpur_block",
-    "minecraft:sponge",
-
     "minecraft:skull",
     "minecraft:bed",
     "minecraft:chemistry_table",

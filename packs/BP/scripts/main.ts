@@ -49,7 +49,7 @@ function tick() {
         }
 
         const held_item = inventory.getItem(player.selectedSlotIndex)
-        if (held_item?.typeId != "hatchi:bundlepack") {
+        if (!held_item?.hasTag("hatchi:bundlepack")) {
             continue
         }
 
@@ -65,7 +65,8 @@ function tick() {
 
 
         held_item.setLore([
-            "Bundlepack " + String(bundlepack_id)
+            "Bundlepack " + String(bundlepack_id),
+            "Right Click to Open"
         ])
 
         let bundlepack_entity: Entity;
@@ -210,7 +211,7 @@ function tick() {
                 if (itemstack == undefined) {
                     continue
                 }
-                const item_disallowed = itemstack.typeId == "hatchi:bundlepack"
+                const item_disallowed = itemstack.hasTag("hatchi:bundlepack")
                 if (item_disallowed) {
                     player.sendMessage(
                         [
@@ -308,7 +309,7 @@ function fillBundleInventory(backpack_data: ItemRepresentation[], inventory: Con
 }
 
 world.beforeEvents.itemUse.subscribe((event) => {
-    if (event.itemStack.typeId == "hatchi:bundlepack") {
+    if (event.itemStack.hasTag("hatchi:bundlepack")) {
         system.run(
             () => {
                 const item = (event.source.getComponent("equippable") as EntityEquippableComponent)?.getEquipment(

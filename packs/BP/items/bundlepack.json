@@ -1,5 +1,5 @@
 {
-	"format_version": "1.20.70",
+	"format_version": "1.21.30",
 	"minecraft:item": {
 		"description": {
 			"identifier": "hatchi:bundlepack",
@@ -21,9 +21,11 @@
 			},
 			"minecraft:tags": {
 				"tags": [
+					"hatchi:bundlepack",
 					"hatchi:back_item"
 				]
-			}
+			},
+			"minecraft:allow_off_hand": true
 		}
 	}
 }

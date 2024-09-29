@@ -28,6 +28,10 @@
 			"npm-install": {
 				"runWith": "shell",
 				"command": "npm install --force"
+			},
+			"generate": {
+				"script": "./generate.js",
+				"runWith": "nodejs"
 			}
 		},
 		"profiles": {
@@ -60,6 +64,9 @@
 					"target": "development"
 				},
 				"filters": [
+					{
+						"filter": "generate"
+					},
 					{
 						"filter": "gametests",
 						"settings": {

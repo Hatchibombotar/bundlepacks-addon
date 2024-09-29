@@ -1,5 +1,5 @@
 {
-    "format_version": "1.12.0",
+    "format_version": "1.21.30",
     "minecraft:recipe_shaped": {
         "description": {
             "identifier": "hatchi:bundlepack_recipe"
@@ -25,6 +25,9 @@
         },
         "result": {
             "item": "hatchi:bundlepack"
+        },
+        "unlock": {
+            "context": "AlwaysUnlocked"
         }
     }
 }
