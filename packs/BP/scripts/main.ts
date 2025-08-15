@@ -1,4 +1,4 @@
-import { Container, EnchantmentType, Entity, EntityComponentTypes, EntityEquippableComponent, EntityInventoryComponent, EntityTameMountComponent, EntityVariantComponent, EquipmentSlot, ItemDurabilityComponent, ItemDyeableComponent, ItemEnchantableComponent, ItemStack, Player, RGB, system, world } from "@minecraft/server"
+import { Container, Dimension, EnchantmentType, Entity, EntityComponentTypes, EntityEquippableComponent, EntityInventoryComponent, EntityTameMountComponent, EntityUnderwaterMovementComponent, EntityVariantComponent, EquipmentSlot, ItemDurabilityComponent, ItemDyeableComponent, ItemEnchantableComponent, ItemStack, Player, RGB, system, world } from "@minecraft/server"
 import { disallowed_items } from "./config"
 import { Vector3Utils as Vector, VECTOR3_UP } from '@minecraft/math'
 
@@ -36,35 +36,52 @@ const accepted_item_components = [
 ] as const
 
 type accepted_item_components = typeof accepted_item_components[number]
-const containers: Record<string, {
+
+// bundlepacks that are currently being tracked
+const containers: Record<string, TrackedBundlePackInfo> = {}
+
+type TrackedBundlePackInfo = {
     entity: Entity
-    in_use: boolean
-    last_used_by_player: Player
-}> = {}
+    in_use: boolean // if the item is being held, this is set to true - entity will get moved otherwise
+    last_used_by_player: Player // the last player to use the bundlepack - used in case items need to be returned
+}
 
 let unhandledComponents = {}
 
 let last_id = 0
+let dimensions: Dimension[] = []
 
 function init() {
     system.run(() => {
         last_id = world.getDynamicProperty("hatchi:last_bundlepack_id") as number ?? 0
 
-        const bundlepacks = world.getDimension("overworld").getEntities(
-            {
-                type: "hatchi:bundlepack_container",
+        dimensions = ["overworld", "nether", "the_end"].map(x => world.getDimension(x))
+
+        for (const dimension of dimensions) {
+            const bundlepacks = dimension.getEntities(
+                {
+                    type: "hatchi:bundlepack_container",
+                }
+            )
+            for (const bundlepack of bundlepacks) {
+                bundlepack.remove()
             }
-        )
-        for (const bundlepack of bundlepacks) {
-            bundlepack.remove()
         }
     })
 }
 
+
 function tick() {
+    // stores the entity ids of all tracked containers
+    const validEntityIds: string[] = []
+
     for (const container of Object.values(containers)) {
         container.in_use = false
+
+        const entity = container.entity
+        validEntityIds.push(entity.id)
     }
+
     for (const player of world.getAllPlayers()) {
         let inventory = (player.getComponent(EntityComponentTypes.Inventory) as EntityInventoryComponent)?.container
         if (inventory == undefined) {
@@ -95,10 +112,12 @@ function tick() {
 
         let bundlepack_entity: Entity;
 
-        if (containers[bundlepack_id] == undefined) {
+        // if container is not being tracked, spawn an entity and start to track it
+        // else, if the entity is undefined
+        if (containers[bundlepack_id] == undefined || containers[bundlepack_id].entity == undefined || !containers[bundlepack_id].entity.isValid) {
             bundlepack_entity = player.dimension.spawnEntity(
                 "hatchi:bundlepack_container",
-                Vector.add(player.location, Vector.scale(VECTOR3_UP, 3))
+                Vector.add(player.location, Vector.scale(VECTOR3_UP, 3)),
             )
 
             bundlepack_entity.nameTag = "custom.hatchi.bundlepack.inventory_name"
@@ -132,10 +151,20 @@ function tick() {
             }
         }
 
+        const tameableComponent = bundlepack_entity.getComponent("tameable")
+        if (tameableComponent?.tamedToPlayerId !== player.id) {
+            tameableComponent?.tame(player)
+        }
+
+        validEntityIds.push(bundlepack_entity.id)
+
         containers[bundlepack_id].in_use = true
         containers[bundlepack_id].last_used_by_player = player
 
-        bundlepack_entity.teleport(player.getHeadLocation())
+        bundlepack_entity.teleport(player.getHeadLocation(), {
+            dimension: player.dimension,
+            keepVelocity: false,
+        })
 
         const bundle_inventory = (bundlepack_entity.getComponent(EntityComponentTypes.Inventory) as EntityInventoryComponent)?.container
         if (bundle_inventory == undefined) {
@@ -222,10 +251,9 @@ function tick() {
 
     for (const container of Object.values(containers)) {
         if (!container.in_use) {
-
             const entity = container.entity
-            if (entity == undefined) continue
-
+            if (entity == undefined || !entity.isValid) continue
+            
             const new_pos = entity.location
             new_pos.y = 400
             entity.teleport(
@@ -267,6 +295,21 @@ function tick() {
                 }
             }
 
+        }
+    }
+
+    // remove any bundlepack entities that are not being tracked
+    for (const dimension of dimensions) {
+        const bundlepackEntities = dimension.getEntities(
+            {
+                type: "hatchi:bundlepack_container",
+            }
+        )
+        for (const entity of bundlepackEntities) {
+            if (!validEntityIds.includes(entity.id)) {
+                console.log(validEntityIds, "removing entity", entity.id)
+                entity.remove()
+            }
         }
     }
 }
@@ -333,6 +376,8 @@ function fillBundleInventory(backpack_data: ItemRepresentation[], inventory: Con
     }
 }
 
+
+// prevent right click for equiping backpacks
 world.beforeEvents.itemUse.subscribe((event) => {
     if (event.itemStack.hasTag("hatchi:bundlepack")) {
         system.run(
