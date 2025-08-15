@@ -1,4 +1,4 @@
-import { Container, EnchantmentType, Entity, EntityComponentTypes, EntityEquippableComponent, EntityInventoryComponent, EntityTameMountComponent, EntityVariantComponent, EquipmentSlot, ItemDurabilityComponent, ItemEnchantableComponent, ItemStack, Player, system, world } from "@minecraft/server"
+import { Container, EnchantmentType, Entity, EntityComponentTypes, EntityEquippableComponent, EntityInventoryComponent, EntityTameMountComponent, EntityVariantComponent, EquipmentSlot, ItemDurabilityComponent, ItemDyeableComponent, ItemEnchantableComponent, ItemStack, Player, RGB, system, world } from "@minecraft/server"
 import { disallowed_items } from "./config"
 import { Vector3Utils as Vector, VECTOR3_UP } from '@minecraft/math'
 
@@ -17,6 +17,11 @@ interface DurabilityComponentRepresentation extends ComponentRepresentation {
     damage?: number
 }
 
+interface DyeableComponentRepresentation extends ComponentRepresentation {
+    typeId: "minecraft:dyeable",
+    color?: RGB,
+}
+
 type ItemRepresentation = {
     typeId: string
     nameTag?: string
@@ -26,7 +31,8 @@ type ItemRepresentation = {
 
 const accepted_item_components = [
     "minecraft:enchantable",
-    "minecraft:durability"
+    "minecraft:durability",
+    "minecraft:dyeable",
 ] as const
 
 type accepted_item_components = typeof accepted_item_components[number]
@@ -36,7 +42,25 @@ const containers: Record<string, {
     last_used_by_player: Player
 }> = {}
 
-let last_id = world.getDynamicProperty("hatchi:last_bundlepack_id") as number ?? 0
+let unhandledComponents = {}
+
+let last_id = 0
+
+function init() {
+    system.run(() => {
+        last_id = world.getDynamicProperty("hatchi:last_bundlepack_id") as number ?? 0
+
+        const bundlepacks = world.getDimension("overworld").getEntities(
+            {
+                type: "hatchi:bundlepack_container",
+            }
+        )
+        for (const bundlepack of bundlepacks) {
+            bundlepack.remove()
+        }
+    })
+}
+
 function tick() {
     for (const container of Object.values(containers)) {
         container.in_use = false
@@ -158,8 +182,19 @@ function tick() {
 
                     item.components.push(component)
                 } else if (typeId == "minecraft:cooldown") {
+                } else if (typeId == "minecraft:compostable") {
+                } else if (typeId == "minecraft:dyeable") {
+                    const component: DyeableComponentRepresentation = {
+                        typeId: "minecraft:dyeable",
+                        color: itemstack.getComponent("dyeable")?.color
+                    }
+
+                    item.components.push(component)
                 } else {
-                    console.error("unhandled item component: " + typeId)
+                    if (!unhandledComponents[typeId]) {
+                        console.error("unhandled item component: " + typeId)
+                        unhandledComponents[typeId] = true
+                    }
                 }
             }
             const item_disallowed = disallowed_items.includes(itemstack.typeId) || itemstack.getDynamicPropertyIds().length > 0
@@ -170,6 +205,7 @@ function tick() {
                         { translate: "custom.hatchi.bundlepack.item_not_supported" }
                     ]
                 )
+                // console.log(JSON.stringify(components))
                 player.playSound("note.bassattack")
 
                 bundle_inventory.transferItem(slot, inventory)
@@ -232,17 +268,6 @@ function tick() {
             }
 
         }
-    }
-}
-
-function init() {
-    const bundlepacks = world.getDimension("overworld").getEntities(
-        {
-            type: "hatchi:bundlepack_container",
-        }
-    )
-    for (const bundlepack of bundlepacks) {
-        bundlepack.remove()
     }
 }
 

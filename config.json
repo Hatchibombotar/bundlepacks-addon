@@ -1,5 +1,5 @@
 {
-	"$schema": "https://raw.githubusercontent.com/Bedrock-OSS/regolith-schemas/main/config/v1.1.json",
+	"$schema": "https://raw.githubusercontent.com/Bedrock-OSS/regolith-schemas/refs/heads/main/config/v1.4.json",
 	"author": "Hatchibombotar",
 	"name": "Bundlepacks",
 	"packs": {
@@ -7,6 +7,7 @@
 		"resourcePack": "./packs/RP"
 	},
 	"regolith": {
+		"formatVersion": "1.4.0",
 		"dataPath": "./packs/data",
 		"filterDefinitions": {
 			"gametests": {
@@ -61,7 +62,8 @@
 			"default": {
 				"export": {
 					"readOnly": false,
-					"target": "development"
+					"target": "development",
+					"build": "standard"
 				},
 				"filters": [
 					{
@@ -81,7 +83,7 @@
 							},
 							"moduleUUID": "2b2ab797-6ad5-4b56-8de3-6dfe98b3216f",
 							"modules": [
-								"@minecraft/server@1.11.0"
+								"@minecraft/server@2.1.0"
 							]
 						}
 					},
